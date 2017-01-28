@@ -1,5 +1,6 @@
 class Admin::JobsController < ApplicationController
 	before_action :authenticate_user!, only: [:show, :index, :new, :create, :edit, :update, :destroy]
+	before_action :require_is_admin
 
 	def show
 		@job = Job.find(params[:id])
@@ -43,6 +44,13 @@ class Admin::JobsController < ApplicationController
 		@job.destroy
 
 		redirect_to admin_jobs_path, alert: "Job Deleted."
+	end
+
+	def require_is_admin
+		if !current_user.admin?
+			flash[:alert] = 'You are not admin'
+			redirect_to root_path
+		end
 	end
 
 	private
